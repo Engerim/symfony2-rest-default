@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+docker run -d \
+           --volumes-from app-data \
+           --name php \
+           --env-file=/home/core/env/symfony \
+           --cidfile $(pwd)/docker/tmp/php-docker.cid \
+           --expose=9000 \
+           php-debug
+
+docker run -d \
+           --volumes-from app-data \
+           -v $(pwd)/docker/nginx/nginx.conf:/opt/nginx/conf/nginx.conf \
+           --name nginx \
+           -p 80:80 \
+           --cidfile $(pwd)/docker/tmp/nginx-docker.cid \
+           nginx

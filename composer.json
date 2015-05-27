@@ -1,0 +1,47 @@
+{
+  "require": {
+    "ext-intl": "*",
+    "ext-mbstring": "*",
+    "friendsofsymfony/rest-bundle": "~1.6",
+    "incenteev/composer-parameter-handler": "~2.0",
+    "jms/serializer-bundle": "~0.13",
+    "php": ">=5.6.0",
+    "sensio/distribution-bundle": "~3.0",
+    "sensio/framework-extra-bundle": "~3.0",
+    "symfony/symfony": "~2.7.0@beta",
+    "symfony/monolog-bundle": "~2.7"
+  },
+  "autoload": {
+    "files": [
+      "app/AppKernel.php"
+    ]
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets"
+    ],
+    "post-update-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets"
+    ]
+  },
+  "config": {
+    "bin-dir": "bin"
+  },
+  "extra": {
+    "symfony-app-dir": "app",
+    "symfony-bin-dir": "bin",
+    "symfony-var-dir": "var",
+    "symfony-web-dir": "web",
+    "symfony-assets-install": "relative",
+    "incenteev-parameters": {
+      "file": "app/config/parameters.yml",
+      "env-map": { }
+    }
+  }
+}

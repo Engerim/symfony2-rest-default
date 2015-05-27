@@ -1,0 +1,45 @@
+imports:
+    - { resource: parameters.yml }
+
+framework:
+    secret: %secret%
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    validation: true
+    templating:
+        engines: ['twig']
+
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+sensio_framework_extra:
+    request:
+        converters: true
+        auto_convert: false
+fos_rest:
+    param_fetcher_listener: force
+    view:
+        view_response_listener: 'force'
+        formats:
+            json: true
+        templating_formats:
+            html: true
+    format_listener:
+        rules:
+            - { path: ^/, priorities: [ json ], fallback_format: json, exception_fallback_format: json}
+    exception:
+        exception_controller: 'FOS\RestBundle\Controller\ExceptionController::showAction'
+        codes:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
+        messages:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': true
+    allowed_methods_listener: true
+    access_denied_listener:
+        json: true
+    body_listener: true
+    body_converter:
+      enabled: true
+      validate: true
+      validation_errors_argument: violations

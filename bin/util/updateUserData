@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo coreos-cloudinit --from-file=/var/lib/coreos-vagrant/vagrantfile-user-data

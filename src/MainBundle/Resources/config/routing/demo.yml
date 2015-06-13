@@ -1,0 +1,14 @@
+acme_project_demo_all:
+    pattern: /
+    schemes: [http]
+    methods: [GET]
+    defaults:
+      _controller: acme.project.demo.controller.all
+#      _converters:
+#          user:
+#              converter: score_ya.cinderella.request_body
+#              name: user
+#              class: ScoreYa\Cinderella\User\Model\User
+#              options:
+#                validator:
+#                  groups: [registration]

@@ -2,6 +2,7 @@
 
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use ACME\PROJECT\Bundle as AppBundle;
 
 class AppKernel extends Kernel
 {
@@ -12,7 +13,8 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Symfony\Bundle\MonologBundle\MonologBundle()
+            new Symfony\Bundle\MonologBundle\MonologBundle(),
+            new AppBundle\MainBundle\ACMEPROJECTMainBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev'], true)) {

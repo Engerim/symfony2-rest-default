@@ -1,0 +1,5 @@
+docker run -ti \
+           --rm \
+           --volumes-from app-data \
+           --env-file=/home/core/env/symfony \
+           php-debug "$@"

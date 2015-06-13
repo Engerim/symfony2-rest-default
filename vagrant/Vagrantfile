@@ -9,7 +9,7 @@ Vagrant.require_version ">= 1.6.0"
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
-$update_channel = "alpha"
+$update_channel = "beta"
 $enable_serial_logging = false
 $vb_gui = false
 $vb_memory = 2048

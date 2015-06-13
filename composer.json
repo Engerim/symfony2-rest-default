@@ -9,12 +9,17 @@
     "sensio/distribution-bundle": "~3.0",
     "sensio/framework-extra-bundle": "~3.0",
     "symfony/symfony": "~2.7.0",
-    "symfony/monolog-bundle": "~2.7"
+    "symfony/monolog-bundle": "~2.7",
+    "symfony/phpunit-bridge": "~2.7"
   },
   "autoload": {
     "files": [
       "app/AppKernel.php"
-    ]
+    ],
+    "psr-4": {
+      "ACME\\PROJECT\\Demo\\": "src/Demo",
+      "ACME\\PROJECT\\Bundle\\MainBundle\\": "src/MainBundle"
+    }
   },
   "scripts": {
     "post-install-cmd": [

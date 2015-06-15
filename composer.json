@@ -1,4 +1,8 @@
 {
+  "name" : "engerim/sf2-rest-default-edition",
+  "license": "MIT",
+  "type": "project",
+  "description": "rest default edition",
   "require": {
     "ext-intl": "*",
     "ext-mbstring": "*",

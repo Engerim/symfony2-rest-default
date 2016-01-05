@@ -1,6 +1,6 @@
-FROM ubuntu:14.04.2
+FROM ubuntu:14.04.3
 MAINTAINER Alexander Miehe <alexander.miehe@gmail.com>
-ENV NGINX_VERSION 1.7.12
+ENV NGINX_VERSION 1.9.7
 
 RUN apt-get update \
     && apt-get install -y curl gcc libpcre3-dev libssl-dev make \
@@ -11,7 +11,7 @@ RUN apt-get update \
     && rm -f nginx-${NGINX_VERSION}.tar.gz \
     && mkdir -p /opt/nginx \
     && cd /tmp/nginx/nginx-${NGINX_VERSION} \
-    && ./configure --with-ipv6 --with-http_stub_status_module --with-http_ssl_module --with-http_spdy_module --prefix=/opt/nginx \
+    && ./configure --with-ipv6 --with-http_stub_status_module --with-http_ssl_module --with-http_v2_module --prefix=/opt/nginx \
     && make \
     && make install \
     && rm -rf /tmp/nginx \

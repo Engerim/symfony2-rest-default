@@ -14,58 +14,69 @@ coreos:
       command: start
     - name: fleet.service
       command: start
+    - name: swap.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Turn on swap
+
+        [Service]
+        Type=oneshot
+        Environment="SWAPFILE=/2GiB.swap"
+        RemainAfterExit=true
+        ExecStartPre=/usr/sbin/losetup -f ${SWAPFILE}
+        ExecStart=/usr/bin/sh -c "/sbin/swapon $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1)"
+        ExecStop=/usr/bin/sh -c "/sbin/swapoff $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1)"
+        ExecStopPost=/usr/bin/sh -c "/usr/sbin/losetup -d $(/usr/sbin/losetup -j ${SWAPFILE} | /usr/bin/cut -d : -f 1)"
+
+        [Install]
+        WantedBy=multi-user.target
     - name: docker.service
       drop-ins:
-        - name: 50-skydns.conf
+        - name: 50-consul.conf
           content: |
             [Service]
             Environment=DOCKER_OPTS='--dns="172.17.42.1"'
             Environment=DOCKER_OPT_BIP='--bip="172.17.42.1/16"'
-    - name: docker-skydns.service
+      command: restart
+    - name: docker-consul.service
       command: start
       enable: true
       content: |
         [Unit]
-        Description=skydns service
+        Description=consul service
         After=docker.service
 
         [Service]
         User=core
-        ExecStartPre=-/usr/bin/docker kill skydns
-        ExecStartPre=-/usr/bin/docker rm -f skydns
-        ExecStart=/usr/bin/docker run -d -p 172.17.42.1:53:53/udp --name skydns crosbymichael/skydns -nameserver 10.10.10.10:53,10.10.11.11:53,8.8.8.8:53 -domain rest
-
-        [Install]
-        WantedBy=multi-user.target
-    - name: docker-skydock.service
+        ExecStartPre=-/usr/bin/docker rm -f consul
+        ExecStart=/usr/bin/docker run -d --name consul -p 172.17.42.1:8500:8500 -p 172.17.42.1:53:8600/udp -p $public_ipv4:8500:8500 -p 8400:8400 gliderlabs/consul-server -node myconsul -bootstrap -advertise $public_ipv4 -client 0.0.0.0 -recursor 8.8.8.8 -recursor 10.10.10.10 -recursor 10.10.11.11
+    - name: docker-registrator.service
       command: start
       enable: true
       content: |
         [Unit]
-        Description=skydock service
-        After=docker-skydns.service
+        Description=registrator service
+        After=docker-consul.service
 
         [Service]
         User=core
-        ExecStartPre=-/usr/bin/docker kill skydock
-        ExecStartPre=-/usr/bin/docker rm -f skydock
-        ExecStart=/usr/bin/docker run -d -v /var/run/docker.sock:/docker.sock --name skydock crosbymichael/skydock -ttl 30 -environment dev -s /docker.sock -domain rest -name skydns
-
-        [Install]
-        WantedBy=multi-user.target
+        ExecStartPre=-/usr/bin/docker rm -f registrator
+        ExecStart=/usr/bin/docker run -d --name registrator -v /var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:master -internal -retry-attempts -1 consul://172.17.42.1:8500
     - name: docker-app-data.service
       command: start
       enable: true
       content: |
         [Unit]
         Description= app data service
-        After=docker-skydock.service
+        After=docker-registrator.service
 
         [Service]
         User=core
         ExecStartPre=-/usr/bin/docker kill app-data
         ExecStartPre=-/usr/bin/docker rm -f app-data
-        ExecStart=/usr/bin/docker run -v /home/core/project:/srv/www/app -v /home/core/composer:/root/.composer --name app-data busybox:latest echo "init app data"
+        ExecStart=/usr/bin/docker run -v /home/core/project:/srv/www/app -v /tmp/vagrant-cache/composer:/root/.composer --name app-data busybox:latest echo "init app data"
 write_files:
   - path: /home/core/env/symfony
     permissions: 0644

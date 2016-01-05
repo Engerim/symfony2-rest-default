@@ -1,6 +1,16 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 
+script = <<SCRIPT
+touch /2GiB.swap
+chattr +C /2GiB.swap
+fallocate -l 2048m /2GiB.swap
+chmod 600 /2GiB.swap
+mkswap /2GiB.swap
+sysctl vm.swappiness=10
+sysctl vm.vfs_cache_pressure=50
+SCRIPT
+
 require 'fileutils'
 
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
@@ -86,11 +96,11 @@ Vagrant.configure("2") do |config|
       ip = "192.168.123.#{i+100}"
       config.vm.network :private_network, ip: ip
 
-      config.vm.synced_folder "./../", "/home/core/project", id: "project", :nfs => true, :mount_options => ['nolock,vers=3,udp']
-
+      config.vm.synced_folder "./../", "/home/core/project", id: "project", :nfs => true, :mount_options => ['nolock,vers=3,tcp,rw']
+      config.vm.provision :shell, :inline => script
 
       config.vm.provision "docker",
-        images: ["crosbymichael/skydock:latest", "crosbymichael/skydns:latest", "busybox:latest"]
+        images: ["gliderlabs/consul-server:latest", "gliderlabs/registrator:master", "busybox:latest", "ubuntu:14.04.3"]
 
       config.vm.provision "docker" do |d|
           d.build_image "/home/core/project/docker/nginx", args: "-t nginx"
